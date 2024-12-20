@@ -15,4 +15,6 @@
 .phpunit
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
+.env
 .idea/
+/public/uploads

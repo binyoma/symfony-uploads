@@ -6,8 +6,10 @@ use App\Entity\Article;
 use App\Form\ArticleFormType;
 use App\Repository\ArticleRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Gedmo\Sluggable\Util\Urlizer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -52,6 +54,18 @@ class ArticleAdminController extends BaseController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+
+            /** @var UploadedFile $uploadedFile */
+            $uploadedFile =$form['imageFile']->getData();
+            if ($uploadedFile) {
+                $destination= $this->getParameter('kernel.project_dir').'/public/uploads/article_image';
+                $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $newFilename =Urlizer::urlize($originalFilename).'-'. uniqid().'.'. $uploadedFile->guessExtension();
+                $uploadedFile->move($destination,
+                    $newFilename);
+                $article->setImageFilename($newFilename);
+            }
+
             $em->persist($article);
             $em->flush();
 
@@ -66,6 +80,7 @@ class ArticleAdminController extends BaseController
             'articleForm' => $form->createView()
         ]);
     }
+
 
     /**
      * @Route("/admin/article/location-select", name="admin_article_location_select")
