@@ -13,7 +13,7 @@
         </div>
         <div class="col-sm-3">
          {% if articleForm.vars.data.imageFilename|default %}
-            <img class="article-img" src="{{ uploaded_asset(articleForm.vars.data.imagePath) }}" height="100">
+             <img  src="{{ uploaded_asset(articleForm.vars.data.imagePath)| imagine_filter('squared_thumbnail_small') }}" height="100">
          {% endif %}
         </div>
     </div>
