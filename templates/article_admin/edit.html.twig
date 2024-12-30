@@ -3,13 +3,38 @@
 {% block content_body %}
     <h1>Edit the Article! 🚀</h1>
 
-    {{ include('article_admin/_form.html.twig', {
-        button_text: 'Update!'
-    }) }}
-{% endblock %}
+    <hr>
+    <div class="row">
+        <div class="col-sm-8">
+            <h3> Details</h3>
+            {{ include('article_admin/_form.html.twig', {
+                button_text: 'Update!'
+            }) }}
+        </div>
+        <div class="col-sm-4">
+            <h3> References</h3>
+            <ul class="list-group small js-reference-list" data-url="{{ path('admin_article_list_references', {id: article.id}) }}">
 
+
+            </ul>
+            <hr>
+            <form action="{{ path('admin_article_add_reference', {
+                id: article.id
+            }) }}" method="post" enctype="multipart/form-data" class="dropzone js-reference-dropzone">
+
+            </form>
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block stylesheets %}
+   {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" integrity="sha512-WvVX1YO12zmsvTpUQV8s7ZU98DnkaAokcciMZJfnNWyNzm7//QRV61t4aEr0WdIa4pe854QHLTV302vH92FSMw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock %}
 {% block javascripts %}
     {{ parent() }}
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js" integrity="sha512-oQq8uth41D+gIH/NJvSJvVB85MFk1eWpMK6glnkg6I7EdMqC1XVkW7RxLheXwmFdG03qScCM7gKS/Cx3FYt7Tg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{{ asset('js/admin_article_form.js') }}"></script>
 {% endblock %}

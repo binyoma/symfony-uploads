@@ -1,6 +1,22 @@
 # app/config/config.yml
 
 liip_imagine:
+    loaders:
+        flysystem_loader:
+            flysystem:
+                filesystem_service: oneup_flysystem.public_uploads_filesystem_filesystem
+
+    #default loader to use for all filter sets
+    data_loader: flysystem_loader
+
+    resolvers:
+        flysystem_resolver:
+            flysystem:
+                filesystem_service: oneup_flysystem.public_uploads_filesystem_filesystem
+                root_url: "%uploads_base_url%"
+                cache_prefix: media/cache
+
+    cache: flysystem_resolver
 
     filter_sets:
         cache: ~
