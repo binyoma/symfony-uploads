@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -116,7 +117,7 @@ class ArticleReferenceAdminController extends BaseController
     }
 
     /**
-     * @Route("admin/article/references/{id}", name="admin_article_delete_references", methods={"DELETE"})
+     * @Route("admin/article/references/{id}", name="admin_article_delete_reference", methods={"DELETE"})
      */
     public function deleteArticleReference(ArticleReference $reference, UploaderHelper $uploaderHelper, EntityManagerInterface $entityManager){
         $article = $reference->getArticle();
@@ -128,6 +129,39 @@ class ArticleReferenceAdminController extends BaseController
 
         return new Response(null, 204);
 
+    }
+    /**
+     * @Route("admin/article/references/{id}", name="admin_article_update_reference", methods={"PUT"})
+     */
+    public function updateArticleReference(ArticleReference $reference, UploaderHelper $uploaderHelper, EntityManagerInterface $entityManager, SerializerInterface $serializer, Request $request, ValidatorInterface $validator){
+        $article = $reference->getArticle();
+        $this->denyAccessUnlessGranted('MANAGE', $article);
+
+        $serializer->deserialize(
+            $request->getContent(),
+            ArticleReference::class,
+            'json',
+            [
+                'object_to_populate' => $reference,
+                'groups' => ['input'],
+            ]
+        );
+        $violations = $validator->validate($reference);
+
+        if ($violations->count() > 0) {
+            return $this->json($violations, 400);
+        }
+        $entityManager->persist($reference);
+        $entityManager->flush();
+
+        return $this->json(
+            $reference,
+            200,
+            [],
+            [
+                'groups' => ['main'],
+            ]
+        );
     }
 
 }
